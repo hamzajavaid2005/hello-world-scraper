@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVAC Products Scraper</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>BudgetHeating Scraper</h1>
+            <p>Scrape products and filter by AHRI component matchups</p>
+        </header>
+        
+        <main>
+            <form id="scrapeForm">
+                <div class="form-group">
+                    <label for="url">Target Category URLs (One per line)</label>
+                    <textarea id="url" name="url" rows="3" placeholder="https://www.budgetheating.com/Air-Conditioner-Gas-Furnace-Cased-Coil-s/121.htm?_bc_fsnf=1&amp;brand=47" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="matchupData">Matchup TSV Data (Optional)</label>
+                    <textarea id="matchupData" rows="6" placeholder="Paste AHRI, Outdoor, Coil, Furnace matchup TSV data here..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="submitBtn">
+                        <span class="btn-text">Start Scraping</span>
+                        <div class="spinner hidden" id="spinner"></div>
+                    </button>
+                </div>
+            </form>
+
+            <div id="statusMessage" class="status-message hidden"></div>
+
+            <section id="resultsSection" class="hidden">
+                <div class="tabs" style="display: flex; align-items: center; gap: 10px;">
+                    <button type="button" class="tab-btn active" data-target="matchedProductsTab">Matched Products (<span id="matchedCount">0</span>)</button>
+                    <button type="button" class="tab-btn" data-target="allProductsTab">All Products (<span id="allCount">0</span>)</button>
+                    <div style="margin-left: auto; display: flex; gap: 10px;">
+                        <button type="button" id="exportAllCsvBtn" class="hidden" style="background-color: #0077b6; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Inter', sans-serif; transition: 0.3s;">
+                            ⬇️ Export All CSV
+                        </button>
+                        <button type="button" id="exportStatusCsvBtn" class="hidden" style="background-color: #2a9d8f; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Inter', sans-serif; transition: 0.3s;">
+                            ⬇️ Matchup Status CSV
+                        </button>
+                        <button type="button" id="exportCsvBtn" class="hidden" style="background-color: #fca311; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Inter', sans-serif; transition: 0.3s;">
+                            ⬇️ Export Matched CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tab-content active" id="matchedProductsTab">
+                    <div class="grid" id="matchedGrid"></div>
+                </div>
+
+                <div class="tab-content" id="allProductsTab">
+                    <div class="grid" id="allGrid"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
