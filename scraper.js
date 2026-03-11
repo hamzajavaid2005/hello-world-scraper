@@ -167,9 +167,8 @@ async function scrapeCategory(urls = [], matchupDataString = "") {
             image,
             listPrice,
             ourPrice,
+            isMatched: false,
           };
-
-          allProducts.push(productData);
 
           if (matchups.length > 0) {
             const foundMatch = matchups.find((match) => {
@@ -188,20 +187,19 @@ async function scrapeCategory(urls = [], matchupDataString = "") {
               productData.outdoor = foundMatch.outdoor;
               productData.coil = foundMatch.coil;
               productData.furnace = foundMatch.furnace;
-              productLinksToDeepScrape.push(productData);
+              productData.isMatched = true;
             }
           }
+          productLinksToDeepScrape.push(productData);
         });
 
-        // Deep Scrape matched products simultaneously
+        // Deep Scrape ALL products simultaneously
         const deepScrapePromises = productLinksToDeepScrape.map(async (p) => {
-          console.log(
-            `Deep scraping matched product: ${p.title.substring(0, 30)}...`,
-          );
+          console.log(`Deep scraping product: ${p.title.substring(0, 30)}...`);
           const details = await scrapeProductDetails(p.url);
 
           // Format explicitly as requested by the user
-          matchedProducts.push({
+          const formattedProduct = {
             name: p.title.replace(/"/g, '""'), // safe CSV quotes handled by csv-writer usually, but mapping it safely here
             price: p.ourPrice,
             description: details.description,
@@ -212,13 +210,25 @@ async function scrapeCategory(urls = [], matchupDataString = "") {
             listPrice: p.listPrice,
             isFreeShipping: "true",
             shippingFee: "",
-            images: "",
+            images: p.image || "",
             features: "Energy Star:Yes|Remote Control:Included|Timer:24-Hour",
             dimensions: "Width:24in|Height:18in|Depth:22in|Weight:75lbs",
             specs: details.specs,
             services:
               "Installation[Standard=149,Window Pro=199];Warranty Extension[1 Year=49,2 Years=89]",
-          });
+
+            // Keep standard fields for frontend UI
+            title: p.title,
+            url: p.url,
+            image: p.image,
+            ourPrice: p.ourPrice,
+          };
+
+          allProducts.push(formattedProduct);
+
+          if (p.isMatched) {
+            matchedProducts.push(formattedProduct);
+          }
         });
 
         await Promise.all(deepScrapePromises);
